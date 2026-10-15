@@ -1,5 +1,11 @@
 # 🎵 AuraTube - Pemutar YouTube Bebas Iklan & Audio Player Modern
 
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-black?logo=vercel&logoColor=white)](https://auratube-player.vercel.app)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/iamkhafid77/auratube-player)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+🌐 **Live Demo Publik**: [https://auratube-player.vercel.app](https://auratube-player.vercel.app)
+
 **AuraTube** adalah aplikasi web modern berbasis *Client-Side & Lightweight Server* yang memungkinkan Anda mencari dan memutar video maupun audio YouTube **100% tanpa iklan**, tanpa memerlukan akun Google, dan hemat kuota data internet.
 
 ---
