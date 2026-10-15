@@ -1,0 +1,19 @@
+{
+  "name": "aura-player-youtube",
+  "version": "1.0.0",
+  "description": "Aplikasi Web Pemutar YouTube Bebas Iklan dengan Fitur Pencarian, Playlist & Audio Mode",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "youtube",
+    "ad-free",
+    "player",
+    "audio-player",
+    "invidious"
+  ],
+  "author": "",
+  "license": "MIT"
+}
