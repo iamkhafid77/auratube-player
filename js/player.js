@@ -80,36 +80,67 @@ class AuraMediaPlayer {
 
     // Update UI title, channel, artwork immediately
     this.updatePlayerMetadataUI(track);
+    this.updateFavoriteUI(track.id);
 
     try {
       // Fetch fresh streams from Invidious API
       const details = await window.AuraApi.getVideoDetails(track.id);
       this.currentStreamDetails = details;
 
-      // Update favorite button state
-      this.updateFavoriteUI(track.id);
-
       // Determine stream based on mode
       this.applyStreamSource(autoPlay);
     } catch (err) {
-      console.error('Failed to load video stream:', err);
-      this.setLoading(false);
-      window.AuraUI.showToast(`Gagal memuat stream video. Mencoba fallback embed...`, 'warning');
-      this.switchMode('embed');
+      console.warn('[AuraPlayer] Stream extraction protected or limited, switching to Clean Embed Player:', err);
+      // Seamlessly switch to Clean Embed Player without blocking playback
+      this.currentMode = 'embed';
+      this.updateModeUI('embed');
+      this.applyStreamSource(autoPlay);
+      window.AuraUI.showToast(`Memutar "${track.title}" via Clean Embed (Bebas Iklan)`, 'info');
     }
   }
 
   applyStreamSource(autoPlay = true) {
-    if (!this.currentStreamDetails) return;
-
     const savedTime = this.currentTime;
-    const details = this.currentStreamDetails;
+
+    // Handle Embed Mode
+    if (this.currentMode === 'embed') {
+      if (this.videoEl) {
+        this.videoEl.pause();
+        this.videoEl.src = '';
+        this.videoEl.classList.add('hidden');
+      }
+      if (this.audioEl) {
+        this.audioEl.pause();
+        this.audioEl.src = '';
+      }
+      this.stopVisualizer();
+
+      if (this.embedFrame && this.currentTrackData) {
+        this.embedFrame.classList.remove('hidden');
+        this.embedFrame.src = `https://www.youtube-nocookie.com/embed/${this.currentTrackData.id}?autoplay=1&enablejsapi=1&modestbranding=1&rel=0`;
+      }
+      this.isPlaying = true;
+      this.updatePlayPauseUI(true);
+      this.setLoading(false);
+      this.updateMediaSessionMetadata();
+      return;
+    }
 
     // Hide fallback embed frame if active
     if (this.embedFrame) {
       this.embedFrame.src = '';
       this.embedFrame.classList.add('hidden');
     }
+
+    if (!this.currentStreamDetails) {
+      // Stream details not available, fallback to embed
+      this.currentMode = 'embed';
+      this.updateModeUI('embed');
+      this.applyStreamSource(autoPlay);
+      return;
+    }
+
+    const details = this.currentStreamDetails;
 
     if (this.currentMode === 'audio') {
       // Pick best audio-only stream
@@ -166,28 +197,12 @@ class AuraMediaPlayer {
       if (autoPlay) {
         this.videoEl.play().catch(e => console.log('Autoplay prevented:', e));
       }
-
-    } else if (this.currentMode === 'embed') {
-      // Fallback clean embed mode (youtube-nocookie)
-      this.videoEl.pause();
-      this.videoEl.classList.add('hidden');
-      this.audioEl.pause();
-      this.stopVisualizer();
-
-      if (this.embedFrame) {
-        this.embedFrame.classList.remove('hidden');
-        this.embedFrame.src = `https://www.youtube-nocookie.com/embed/${this.currentTrackData.id}?autoplay=1&modestbranding=1&rel=0`;
-      }
-      this.isPlaying = true;
-      this.updatePlayPauseUI(true);
-      this.setLoading(false);
     }
 
     this.updateMediaSessionMetadata();
   }
 
   switchMode(targetMode) {
-    if (this.currentMode === targetMode) return;
     this.currentMode = targetMode;
 
     const el = this.getActiveMediaElement();
@@ -195,7 +210,12 @@ class AuraMediaPlayer {
       this.currentTime = el.currentTime;
     }
 
-    // Update UI active buttons
+    this.updateModeUI(targetMode);
+    this.applyStreamSource(this.isPlaying);
+    window.AuraUI.showToast(`Beralih ke mode ${targetMode.toUpperCase()}`, 'info');
+  }
+
+  updateModeUI(targetMode) {
     document.querySelectorAll('.mode-toggle-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.mode === targetMode);
     });
@@ -204,9 +224,6 @@ class AuraMediaPlayer {
     if (theaterContainer) {
       theaterContainer.setAttribute('data-active-mode', targetMode);
     }
-
-    this.applyStreamSource(this.isPlaying);
-    window.AuraUI.showToast(`Beralih ke mode ${targetMode.toUpperCase()}`, 'info');
   }
 
   togglePlay() {
