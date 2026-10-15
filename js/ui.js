@@ -290,7 +290,7 @@ class AuraUIController {
 
       card.innerHTML = `
         <div class="card-thumbnail-wrapper">
-          <img class="card-thumb-img" src="${item.thumbnail}" alt="${this.escapeHtml(item.title)}" loading="lazy" />
+          <img class="card-thumb-img" src="${item.thumbnail}" alt="${this.escapeHtml(item.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://img.youtube.com/vi/${item.id}/hqdefault.jpg';" />
           <span class="card-duration-badge">${item.durationFormatted}</span>
           <div class="card-hover-overlay">
             <button class="card-play-action-btn" title="Putar Sekarang">
@@ -415,7 +415,7 @@ class AuraUIController {
 
       row.innerHTML = `
         <span class="queue-track-index">${isCurrent ? '▶' : idx + 1}</span>
-        <img class="queue-track-thumb" src="${track.thumbnail}" alt="" />
+        <img class="queue-track-thumb" src="${track.thumbnail}" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://img.youtube.com/vi/${track.id}/hqdefault.jpg';" />
         <div class="queue-track-meta">
           <div class="queue-track-title">${this.escapeHtml(track.title)}</div>
           <div class="queue-track-author">${this.escapeHtml(track.author || '')}</div>
@@ -554,7 +554,7 @@ class AuraUIController {
 
       row.innerHTML = `
         <span class="queue-track-index">${index + 1}</span>
-        <img class="queue-track-thumb" src="${item.thumbnail}" alt="" />
+        <img class="queue-track-thumb" src="${item.thumbnail}" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://img.youtube.com/vi/${item.id}/hqdefault.jpg';" />
         <div class="queue-track-meta">
           <div class="queue-track-title">${this.escapeHtml(item.title)}</div>
           <div class="queue-track-author">${this.escapeHtml(item.author || '')}</div>

@@ -156,7 +156,7 @@ class InvidiousApi {
 
     const items = Array.isArray(data) ? data : (data.items || []);
     const results = items
-      .filter(item => item.type === 'video' || item.videoId)
+      .filter(item => item.videoId && (item.type === 'video' || !item.type))
       .map(item => ({
         id: item.videoId,
         title: item.title,
@@ -184,18 +184,21 @@ class InvidiousApi {
     try {
       const data = await this._fetchWithFallback(endpoint);
       const items = Array.isArray(data) ? data : [];
-      return items.slice(0, 24).map(item => ({
-        id: item.videoId,
-        title: item.title,
-        author: item.author || '',
-        authorUrl: item.authorUrl || '',
-        durationFormatted: this.formatDuration(item.lengthSeconds),
-        durationSeconds: item.lengthSeconds || 0,
-        viewCount: this.formatViews(item.viewCount),
-        publishedText: item.publishedText || 'Trending',
-        thumbnail: this.getBestThumbnail(item.videoThumbnails, item.videoId),
-        description: item.description || ''
-      }));
+      return items
+        .filter(item => item.videoId)
+        .slice(0, 24)
+        .map(item => ({
+          id: item.videoId,
+          title: item.title,
+          author: item.author || '',
+          authorUrl: item.authorUrl || '',
+          durationFormatted: this.formatDuration(item.lengthSeconds),
+          durationSeconds: item.lengthSeconds || 0,
+          viewCount: this.formatViews(item.viewCount),
+          publishedText: item.publishedText || 'Trending',
+          thumbnail: this.getBestThumbnail(item.videoThumbnails, item.videoId),
+          description: item.description || ''
+        }));
     } catch (e) {
       // Fallback search for popular music/chill if trending endpoint is restricted
       const fallback = await this.search('lofi hip hop radio live chill beats');
@@ -285,15 +288,17 @@ class InvidiousApi {
   }
 
   getBestThumbnail(thumbnails, videoId) {
+    if (videoId) {
+      // Direct official Google/YouTube Image CDN (100% reliable image, never HTML proxy)
+      return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+    }
     if (thumbnails && thumbnails.length > 0) {
-      // Pick medium or high resolution thumbnail
-      const preferred = thumbnails.find(t => t.quality === 'high' || t.quality === 'medium') || thumbnails[0];
-      if (preferred.url) {
-        return preferred.url.startsWith('http') ? preferred.url : `${this.getActiveInstance()}${preferred.url}`;
+      const ytThumb = thumbnails.find(t => t.url && t.url.includes('ytimg.com')) || thumbnails[0];
+      if (ytThumb && ytThumb.url && ytThumb.url.startsWith('http')) {
+        return ytThumb.url;
       }
     }
-    // High-resolution YouTube CDN thumbnail fallback
-    return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+    return '';
   }
 
   formatDuration(seconds) {

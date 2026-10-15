@@ -7,6 +7,9 @@
   <meta name="description" content="Aplikasi web pemutar video YouTube tanpa iklan dengan fitur pencarian cepat, playlist lokal, audio player hemat kuota, dan antarmuka minimalis elegan.">
   <meta name="theme-color" content="#08090d">
 
+  <!-- Referrer Policy to allow clean YouTube CDN thumbnails without 403 blocks -->
+  <meta name="referrer" content="no-referrer">
+
   <!-- Favicon via SVG Data URI -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><path d='M8 5v14l11-7z'/></svg>">
 
@@ -131,7 +134,7 @@
                   <div class="vinyl-grooves"></div>
                   <div class="vinyl-grooves-inner"></div>
                   <div class="vinyl-art-center">
-                    <img class="vinyl-art-img current-track-art" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><rect width='24' height='24'/></svg>" alt="" />
+                    <img class="vinyl-art-img current-track-art" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><rect width='24' height='24'/></svg>" alt="" referrerpolicy="no-referrer" />
                   </div>
                 </div>
               </div>
@@ -315,7 +318,7 @@
     <footer class="floating-bottom-player-bar" id="floating-bottom-bar">
       <!-- Mini Track Info -->
       <div class="bottom-track-info-cell">
-        <img class="bottom-track-thumb-img current-track-art" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><rect width='24' height='24'/></svg>" alt="" />
+        <img class="bottom-track-thumb-img current-track-art" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><rect width='24' height='24'/></svg>" alt="" referrerpolicy="no-referrer" />
         <div class="bottom-track-text">
           <div class="bottom-track-title current-track-title">Belum ada video</div>
           <div class="bottom-track-artist current-track-artist">AuraTube Ad-Free</div>
@@ -379,7 +382,7 @@
         </div>
         
         <div style="display: flex; gap: 12px; align-items: center; padding: 8px; background: var(--bg-surface); border-radius: var(--radius-sm);">
-          <img id="add-modal-track-thumb" src="" alt="" style="width: 50px; height: 36px; object-fit: cover; border-radius: 4px;" />
+          <img id="add-modal-track-thumb" src="" alt="" referrerpolicy="no-referrer" style="width: 50px; height: 36px; object-fit: cover; border-radius: 4px;" />
           <strong id="add-modal-track-title" style="font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></strong>
         </div>
 
