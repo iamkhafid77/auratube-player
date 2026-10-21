@@ -8,12 +8,10 @@ class InvidiousApi {
   constructor() {
     this.instances = [
       { url: 'https://invidious.f5.si', name: 'Tokyo Fast (f5.si)', status: 'unknown' },
-      { url: 'https://invidious.protokolla.fi', name: 'Protokolla (FI)', status: 'unknown' },
-      { url: 'https://invidious.slipfox.xyz', name: 'Slipfox (XYZ)', status: 'unknown' },
-      { url: 'https://yewtu.be', name: 'YewTube (EU)', status: 'unknown' }
+      { url: 'https://invidious.flokinet.to', name: 'Flokinet Fast (EU)', status: 'unknown' }
     ];
 
-    // Load custom or active instance from localStorage if saved
+    // Load custom or active instance from localStorage if valid
     const savedInstance = localStorage.getItem('auratube_active_instance');
     this.activeInstanceIndex = 0;
     if (savedInstance) {
@@ -21,9 +19,8 @@ class InvidiousApi {
       if (idx !== -1) {
         this.activeInstanceIndex = idx;
       } else {
-        // Custom instance added by user
-        this.instances.unshift({ url: savedInstance, name: 'Custom Instance', status: 'unknown' });
-        this.activeInstanceIndex = 0;
+        // Clear obsolete instance to avoid getting stuck on a dead server
+        localStorage.removeItem('auratube_active_instance');
       }
     }
 
@@ -85,8 +82,14 @@ class InvidiousApi {
           throw new Error(`HTTP Error ${res.status}: ${res.statusText}`);
         }
 
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json') && !contentType.includes('+json')) {
+          throw new Error(`Response bukan JSON (${contentType}), kemungkinan halaman bot-check`);
+        }
+
+        const data = await res.json();
         current.status = 'online';
-        return await res.json();
+        return data;
       } catch (err) {
         console.warn(`[AuraTube API] Failed on ${current.url}: ${err.message}. Trying next instance...`);
         current.status = 'error';

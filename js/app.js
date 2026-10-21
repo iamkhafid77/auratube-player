@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.mode-toggle-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const targetMode = btn.dataset.mode;
-      player.switchMode(targetMode);
+      player.switchMode(targetMode, true, true);
     });
   });
 
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         break;
       case 'KeyA':
         // Toggle Audio/Video mode
-        player.switchMode(player.currentMode === 'video' ? 'audio' : 'video');
+        player.switchMode(player.currentMode === 'video' ? 'audio' : 'video', true, true);
         break;
       case 'KeyN':
         player.playNext();

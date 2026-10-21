@@ -10,8 +10,9 @@ class AuraMediaPlayer {
     this.audioEl = document.getElementById('main-audio-element');
     this.embedFrame = document.getElementById('main-embed-frame');
 
-    // Modes: 'video' | 'audio' | 'embed'
-    this.currentMode = 'video';
+    // Preferred mode: 'video' | 'audio' | 'embed'
+    this.preferredMode = localStorage.getItem('auratube_preferred_mode') || 'video';
+    this.currentMode = this.preferredMode;
     this.currentTrackData = null;
     this.currentStreamDetails = null;
 
@@ -78,9 +79,19 @@ class AuraMediaPlayer {
     this.setLoading(true);
     this.currentTrackData = track;
 
+    // Always restore user's preferred mode so the player never gets stuck in embed
+    this.currentMode = this.preferredMode;
+    this.updateModeUI(this.currentMode);
+
     // Update UI title, channel, artwork immediately
     this.updatePlayerMetadataUI(track);
     this.updateFavoriteUI(track.id);
+
+    // If user explicitly chose embed as preference, play embed immediately
+    if (this.currentMode === 'embed') {
+      this.applyStreamSource(autoPlay);
+      return;
+    }
 
     try {
       // Fetch fresh streams from Invidious API
@@ -90,8 +101,8 @@ class AuraMediaPlayer {
       // Determine stream based on mode
       this.applyStreamSource(autoPlay);
     } catch (err) {
-      console.warn('[AuraPlayer] Stream extraction protected or limited, switching to Clean Embed Player:', err);
-      // Seamlessly switch to Clean Embed Player without blocking playback
+      console.warn('[AuraPlayer] Stream extraction protected or limited, fallback to Clean Embed:', err);
+      // Temporary fallback for this specific track without changing user preference
       this.currentMode = 'embed';
       this.updateModeUI('embed');
       this.applyStreamSource(autoPlay);
@@ -99,20 +110,21 @@ class AuraMediaPlayer {
     }
   }
 
+  cleanStopMedia(el) {
+    if (!el) return;
+    el.pause();
+    el.removeAttribute('src');
+    el.load();
+  }
+
   applyStreamSource(autoPlay = true) {
     const savedTime = this.currentTime;
 
     // Handle Embed Mode
     if (this.currentMode === 'embed') {
-      if (this.videoEl) {
-        this.videoEl.pause();
-        this.videoEl.src = '';
-        this.videoEl.classList.add('hidden');
-      }
-      if (this.audioEl) {
-        this.audioEl.pause();
-        this.audioEl.src = '';
-      }
+      this.cleanStopMedia(this.videoEl);
+      if (this.videoEl) this.videoEl.classList.add('hidden');
+      this.cleanStopMedia(this.audioEl);
       this.stopVisualizer();
 
       if (this.embedFrame && this.currentTrackData) {
@@ -143,6 +155,10 @@ class AuraMediaPlayer {
     const details = this.currentStreamDetails;
 
     if (this.currentMode === 'audio') {
+      // Stop video cleanly without triggering error events
+      this.cleanStopMedia(this.videoEl);
+      if (this.videoEl) this.videoEl.classList.add('hidden');
+
       // Pick best audio-only stream
       const audioStreams = details.audioStreams;
       let audioUrl = '';
@@ -155,11 +171,6 @@ class AuraMediaPlayer {
 
       if (!audioUrl) throw new Error('Tidak ada stream audio yang tersedia.');
 
-      // Stop video
-      this.videoEl.pause();
-      this.videoEl.src = '';
-      this.videoEl.classList.add('hidden');
-
       // Start audio
       this.audioEl.src = audioUrl;
       this.audioEl.currentTime = savedTime || 0;
@@ -171,6 +182,10 @@ class AuraMediaPlayer {
       this.startVisualizer();
 
     } else if (this.currentMode === 'video') {
+      // Stop audio cleanly without triggering error events
+      this.cleanStopMedia(this.audioEl);
+      this.stopVisualizer();
+
       // Pick best video stream
       const videoStreams = details.videoStreams;
       let videoUrl = '';
@@ -182,11 +197,6 @@ class AuraMediaPlayer {
       }
 
       if (!videoUrl) throw new Error('Tidak ada stream video yang tersedia.');
-
-      // Stop audio
-      this.audioEl.pause();
-      this.audioEl.src = '';
-      this.stopVisualizer();
 
       // Start video
       this.videoEl.classList.remove('hidden');
@@ -202,7 +212,12 @@ class AuraMediaPlayer {
     this.updateMediaSessionMetadata();
   }
 
-  switchMode(targetMode) {
+  switchMode(targetMode, showToast = true, isUserChoice = false) {
+    if (isUserChoice) {
+      this.preferredMode = targetMode;
+      localStorage.setItem('auratube_preferred_mode', targetMode);
+    }
+    if (this.currentMode === targetMode) return;
     this.currentMode = targetMode;
 
     const el = this.getActiveMediaElement();
@@ -212,7 +227,9 @@ class AuraMediaPlayer {
 
     this.updateModeUI(targetMode);
     this.applyStreamSource(this.isPlaying);
-    window.AuraUI.showToast(`Beralih ke mode ${targetMode.toUpperCase()}`, 'info');
+    if (showToast) {
+      window.AuraUI.showToast(`Beralih ke mode ${targetMode.toUpperCase()}`, 'info');
+    }
   }
 
   updateModeUI(targetMode) {
@@ -311,10 +328,36 @@ class AuraMediaPlayer {
   }
 
   handleMediaError(e) {
-    console.warn('[AuraPlayer] Media element error, triggering fallback:', e);
+    const el = e.target;
+    // Strictly ignore errors from non-active media element (e.g. inactive audio/video tag)
+    if (el !== this.getActiveMediaElement()) {
+      return;
+    }
+
+    // Ignore if mode is already embed
+    if (this.currentMode === 'embed') {
+      return;
+    }
+
+    // Ignore if element has no valid src or was intentionally cleared
+    const currentSrc = el.getAttribute('src');
+    if (!currentSrc || currentSrc.trim() === '' || currentSrc === window.location.href) {
+      return;
+    }
+
+    // Ignore aborted loads (user changed track or stopped)
+    if (el.error && el.error.code === 1) { // MediaError.MEDIA_ERR_ABORTED
+      return;
+    }
+
+    console.warn('[AuraPlayer] Active media element playback error:', el.error);
     this.setLoading(false);
-    // Auto fallback to clean embed
-    this.switchMode('embed');
+
+    // Fallback to clean embed only when active stream legitimately failed to play
+    this.currentMode = 'embed';
+    this.updateModeUI('embed');
+    this.applyStreamSource(true);
+    window.AuraUI.showToast('Stream dibatasi oleh CDN, dialihkan ke Clean Embed', 'warning');
   }
 
   seek(percent) {
