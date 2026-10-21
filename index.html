@@ -7,8 +7,8 @@
   <meta name="description" content="Aplikasi web pemutar video YouTube tanpa iklan dengan fitur pencarian cepat, playlist lokal, audio player hemat kuota, dan antarmuka minimalis elegan.">
   <meta name="theme-color" content="#08090d">
 
-  <!-- Referrer Policy to allow clean YouTube CDN thumbnails without 403 blocks -->
-  <meta name="referrer" content="no-referrer">
+  <!-- Referrer Policy to satisfy YouTube embed authentication (fixes Error 153) while keeping thumbnails clean -->
+  <meta name="referrer" content="strict-origin-when-cross-origin">
 
   <!-- Favicon via SVG Data URI -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><path d='M8 5v14l11-7z'/></svg>">
@@ -119,7 +119,7 @@
             <!-- VIDEO CANVAS -->
             <div class="theater-media-canvas" id="media-canvas-container">
               <video id="main-video-element" class="main-video-tag" playsinline></video>
-              <iframe id="main-embed-frame" class="main-embed-iframe hidden" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+              <iframe id="main-embed-frame" class="main-embed-iframe hidden" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
 
               <div class="player-buffering-overlay" id="player-buffering-indicator">
                 <div class="spinner-neon"></div>

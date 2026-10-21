@@ -129,6 +129,7 @@ class AuraMediaPlayer {
 
       if (this.embedFrame && this.currentTrackData) {
         this.embedFrame.classList.remove('hidden');
+        this.embedFrame.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
         const originParam = window.location.origin && window.location.origin !== 'null'
           ? `&origin=${encodeURIComponent(window.location.origin)}`
           : '';
