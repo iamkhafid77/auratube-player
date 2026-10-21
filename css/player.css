@@ -1,18 +1,17 @@
 /**
  * AuraTube Player Stylesheet
- * Handles Theater Stage, Video Player Canvas, Audio Suite (Vinyl & Visualizer),
- * and Persistent Floating Player Bar
+ * YouTube Red & Electric Blue Aesthetic (Dominan Merah & Biru)
  */
 
 /* Player Theater Stage */
 .player-theater-wrapper {
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   position: relative;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background: #090b10;
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  background: #000000;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 0, 51, 0.12);
   transition: var(--transition);
 }
 
@@ -21,8 +20,8 @@
   inset: -20px;
   background-size: cover;
   background-position: center;
-  filter: blur(50px) brightness(0.25);
-  opacity: 0.7;
+  filter: blur(50px) brightness(0.2);
+  opacity: 0.65;
   pointer-events: none;
   transition: background-image 0.6s ease;
 }
@@ -64,7 +63,7 @@
 .player-buffering-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -91,6 +90,7 @@
   gap: 24px;
   min-height: 380px;
   position: relative;
+  background: radial-gradient(circle at center, rgba(37, 99, 235, 0.12) 0%, rgba(255, 0, 51, 0.08) 50%, transparent 80%);
 }
 
 [data-active-mode="audio"] .theater-media-canvas {
@@ -101,7 +101,7 @@
   display: flex;
 }
 
-/* Spinning Vinyl Record */
+/* Spinning Vinyl Record with YouTube Red Label */
 .vinyl-disc-container {
   position: relative;
   width: 200px;
@@ -115,9 +115,9 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: radial-gradient(circle, #2a2a2a 0%, #151515 40%, #0d0d0d 70%, #1a1a1a 100%);
+  background: radial-gradient(circle, #222 0%, #111 40%, #080808 70%, #151515 100%);
   border: 4px solid #333;
-  box-shadow: 0 0 35px rgba(99, 102, 241, 0.3), inset 0 0 20px #000;
+  box-shadow: 0 0 35px rgba(255, 0, 51, 0.4), 0 0 15px rgba(37, 99, 235, 0.4), inset 0 0 20px #000;
   position: relative;
   display: flex;
   align-items: center;
@@ -155,8 +155,8 @@
   height: 86px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid #1a1a1a;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  border: 3px solid var(--yt-red);
+  box-shadow: 0 0 16px rgba(255, 0, 51, 0.6);
 }
 
 .vinyl-art-img {
@@ -184,19 +184,19 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 12px;
-  background: rgba(99, 102, 241, 0.15);
-  border: 1px solid rgba(99, 102, 241, 0.35);
+  padding: 5px 14px;
+  background: rgba(37, 99, 235, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.4);
   border-radius: 20px;
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  color: #a5b4fc;
+  color: #93c5fd;
 }
 
 /* Theater Control Deck */
 .theater-control-deck {
   padding: 16px 24px;
-  background: rgba(12, 15, 23, 0.88);
+  background: rgba(11, 15, 26, 0.94);
   backdrop-filter: blur(16px);
   border-top: 1px solid var(--border-subtle);
   display: flex;
@@ -204,7 +204,7 @@
   gap: 12px;
 }
 
-/* Scrubber / Progress Bar */
+/* Scrubber / Progress Bar - YouTube Red Style */
 .player-scrubber-row {
   display: flex;
   align-items: center;
@@ -214,8 +214,8 @@
 
 .player-scrubber-track {
   flex: 1;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.14);
+  height: 5px;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 3px;
   position: relative;
   cursor: pointer;
@@ -223,7 +223,7 @@
 }
 
 .player-scrubber-track:hover {
-  height: 8px;
+  height: 7px;
 }
 
 .player-scrubber-progress {
@@ -231,7 +231,7 @@
   top: 0;
   left: 0;
   height: 100%;
-  background: var(--accent-gradient);
+  background: var(--yt-red);
   border-radius: 3px;
   width: 0%;
   pointer-events: none;
@@ -241,12 +241,13 @@
   position: absolute;
   top: 50%;
   left: 0%;
-  width: 14px;
-  height: 14px;
-  background: #fff;
+  width: 13px;
+  height: 13px;
+  background: var(--yt-red);
+  border: 2px solid #ffffff;
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
-  box-shadow: 0 0 10px var(--accent-glow);
+  box-shadow: 0 0 10px rgba(255, 0, 51, 0.9), 0 0 0 2px rgba(37, 99, 235, 0.5);
   pointer-events: none;
   transition: transform 0.15s ease;
 }
@@ -316,31 +317,32 @@
 
 .theater-btn:hover {
   color: #fff;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(37, 99, 235, 0.15);
 }
 
 .theater-btn.active {
-  color: var(--accent-primary);
+  color: var(--yt-red);
 }
 
+/* Large Center Play/Pause Button - YouTube Red Glow */
 .theater-btn-play-pause {
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: var(--accent-gradient);
+  background: var(--yt-red);
   color: #fff;
-  box-shadow: 0 4px 16px var(--accent-glow);
+  box-shadow: 0 4px 18px rgba(255, 0, 51, 0.55), 0 0 0 2px rgba(37, 99, 235, 0.3);
 }
 
 .theater-btn-play-pause:hover {
   transform: scale(1.06);
-  color: #fff;
-  background: var(--accent-gradient);
+  background: var(--yt-red-hover);
+  box-shadow: 0 6px 24px rgba(255, 0, 51, 0.75), 0 0 10px rgba(37, 99, 235, 0.5);
 }
 
 .theater-btn-play-pause svg {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
 }
 
 /* Mode Switchers & Utility Controls */
@@ -352,8 +354,8 @@
 
 .mode-toggle-group {
   display: flex;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-subtle);
+  background: #0e1422;
+  border: 1px solid rgba(59, 130, 246, 0.3);
   border-radius: 20px;
   padding: 2px;
 }
@@ -370,10 +372,21 @@
   transition: var(--transition);
 }
 
-.mode-toggle-btn.active {
-  background: var(--accent-primary);
+.mode-toggle-btn[data-mode="video"].active {
+  background: var(--yt-red);
   color: #fff;
-  box-shadow: 0 2px 8px var(--accent-glow);
+  box-shadow: 0 2px 10px rgba(255, 0, 51, 0.5);
+}
+
+.mode-toggle-btn[data-mode="audio"].active {
+  background: var(--yt-blue);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.5);
+}
+
+.mode-toggle-btn[data-mode="embed"].active {
+  background: #374151;
+  color: #fff;
 }
 
 .speed-select-group {
@@ -395,7 +408,8 @@
 
 .speed-btn.active {
   color: #fff;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(37, 99, 235, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 /* Volume Slider in Deck */
@@ -421,8 +435,9 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #fff;
+  background: #60a5fa;
   cursor: pointer;
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.8);
 }
 
 /* PERSISTENT FLOATING BOTTOM PLAYER */
@@ -432,10 +447,10 @@
   left: var(--sidebar-width);
   right: 0;
   height: var(--bottom-bar-height);
-  background: rgba(10, 12, 19, 0.92);
+  background: rgba(11, 16, 28, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid var(--border-subtle);
+  border-top: 1px solid rgba(59, 130, 246, 0.25);
   z-index: 50;
   display: flex;
   align-items: center;
@@ -457,7 +472,7 @@
   height: 50px;
   border-radius: var(--radius-sm);
   object-fit: cover;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(37, 99, 235, 0.3);
 }
 
 .bottom-track-text {
@@ -471,6 +486,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #fff;
 }
 
 .bottom-track-artist {
@@ -509,11 +525,11 @@
 }
 
 .favorite-btn-current.favorited {
-  color: #ef4444;
+  color: var(--yt-red);
 }
 
 .favorite-btn-current.favorited svg {
-  fill: #ef4444;
+  fill: var(--yt-red);
 }
 
 /* Responsive Player Layout */

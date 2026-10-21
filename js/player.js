@@ -481,11 +481,11 @@ class AuraMediaPlayer {
         const hPercent = 0.15 + (Math.sin(timeFactor + i * 0.4) + 1) * 0.35 + (Math.cos(timeFactor * 1.5 + i) + 1) * 0.15;
         const barHeight = Math.max(4, hPercent * canvas.height * 0.85);
 
-        // Gradient color from electric indigo to neon pink
+        // Gradient color from YouTube Red to Electric Blue & Cyan
         const gradient = ctx.createLinearGradient(0, canvas.height - barHeight, 0, canvas.height);
-        gradient.addColorStop(0, '#ec4899');
-        gradient.addColorStop(0.5, '#8b5cf6');
-        gradient.addColorStop(1, '#6366f1');
+        gradient.addColorStop(0, '#ff0033');
+        gradient.addColorStop(0.5, '#3b82f6');
+        gradient.addColorStop(1, '#1d4ed8');
 
         ctx.fillStyle = gradient;
         ctx.beginPath();

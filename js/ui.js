@@ -114,6 +114,30 @@ class AuraUIController {
       });
     }
 
+    // YouTube Category Filter Chips
+    document.querySelectorAll('.yt-chip-btn').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.yt-chip-btn').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const query = chip.dataset.query;
+        if (query) {
+          if (searchInput) {
+            searchInput.value = chip.textContent.replace(/^[^\w\s]+/, '').trim();
+            if (clearSearchBtn) clearSearchBtn.classList.remove('hidden');
+          }
+          this.switchView('explore');
+          this.executeSearch(query);
+        } else {
+          if (searchInput) {
+            searchInput.value = '';
+            if (clearSearchBtn) clearSearchBtn.classList.add('hidden');
+          }
+          this.switchView('explore');
+          this.loadTrendingFeed();
+        }
+      });
+    });
+
     // Modal close buttons (backdrop + close icon)
     document.querySelectorAll('.modal-backdrop, .modal-close-btn').forEach(el => {
       el.addEventListener('click', (e) => {
@@ -288,6 +312,9 @@ class AuraUIController {
       card.className = 'video-card-item';
       card.setAttribute('data-video-id', item.id);
 
+      const authorName = item.author || 'YouTube';
+      const initial = authorName.trim().charAt(0).toUpperCase() || 'Y';
+
       card.innerHTML = `
         <div class="card-thumbnail-wrapper">
           <img class="card-thumb-img" src="${item.thumbnail}" alt="${this.escapeHtml(item.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://img.youtube.com/vi/${item.id}/hqdefault.jpg';" />
@@ -299,10 +326,24 @@ class AuraUIController {
           </div>
         </div>
         <div class="card-meta-content">
-          <h4 class="card-title" title="${this.escapeHtml(item.title)}">${this.escapeHtml(item.title)}</h4>
-          <div class="card-author-row">
-            <span class="card-author">${this.escapeHtml(item.author || 'YouTube')}</span>
-            <span class="card-views">${item.viewCount}</span>
+          <div class="card-meta-top-row">
+            <div class="card-channel-avatar" title="${this.escapeHtml(authorName)}">
+              <span>${this.escapeHtml(initial)}</span>
+            </div>
+            <div class="card-title-container">
+              <h4 class="card-title" title="${this.escapeHtml(item.title)}">${this.escapeHtml(item.title)}</h4>
+              <div class="card-author-row">
+                <span class="card-author">${this.escapeHtml(authorName)}</span>
+                <span class="card-verified-badge" title="Terverifikasi">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.8 14.6l-3.8-3.8 1.4-1.4 2.4 2.4 6-6 1.4 1.4-7.4 7.4z"/></svg>
+                </span>
+              </div>
+              <div class="card-stats-row">
+                <span class="card-views">${item.viewCount}</span>
+                <span class="card-dot-sep">•</span>
+                <span class="card-published">${this.escapeHtml(item.publishedText || 'YouTube')}</span>
+              </div>
+            </div>
           </div>
           <div class="card-actions-row">
             <button class="card-action-btn btn-add-queue" title="Tambah ke antrean">
