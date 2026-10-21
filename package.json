@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "Aplikasi Web Pemutar YouTube Bebas Iklan dengan Fitur Pencarian, Playlist & Audio Mode",
   "scripts": {
-    "start": "node local-server.js",
-    "dev": "node local-server.js"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "local": "node local-server.js"
   },
   "keywords": [
     "youtube",

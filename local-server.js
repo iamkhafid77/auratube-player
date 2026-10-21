@@ -25,6 +25,41 @@ const MIME_TYPES = {
 const server = http.createServer((req, res) => {
   // Normalize URL and remove query strings
   let reqUrl = req.url.split('?')[0];
+
+  // API Proxy endpoint to bypass CORS and regional restrictions
+  if (reqUrl === '/api/proxy') {
+    const host = req.headers.host || `localhost:${PORT}`;
+    const urlObj = new URL(req.url, `http://${host}`);
+    const targetUrl = urlObj.searchParams.get('url');
+
+    if (!targetUrl) {
+      res.writeHead(400, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+      res.end(JSON.stringify({ error: 'Parameter url diperlukan' }));
+      return;
+    }
+
+    fetch(targetUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      }
+    })
+      .then(async apiRes => {
+        const data = await apiRes.arrayBuffer();
+        res.writeHead(apiRes.status, {
+          'Content-Type': apiRes.headers.get('content-type') || 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, OPTIONS',
+          'Access-Control-Allow-Headers': '*'
+        });
+        res.end(Buffer.from(data));
+      })
+      .catch(err => {
+        res.writeHead(502, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({ error: 'Proxy fetch failed: ' + err.message }));
+      });
+    return;
+  }
+
   if (reqUrl === '/') reqUrl = '/index.html';
 
   const safePath = path.normalize(decodeURIComponent(reqUrl)).replace(/^(\.\.[\/\\])+/, '');

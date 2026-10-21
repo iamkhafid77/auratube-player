@@ -8,9 +8,9 @@ class InvidiousApi {
   constructor() {
     this.instances = [
       { url: 'https://invidious.f5.si', name: 'Tokyo Fast (f5.si)', status: 'unknown' },
-      { url: 'https://invidious.ducks.party', name: 'Ducks Party', status: 'unknown' },
-      { url: 'https://invidious.nerdvpn.de', name: 'NerdVPN DE', status: 'unknown' },
-      { url: 'https://inv.nadeko.net', name: 'Nadeko Net', status: 'unknown' }
+      { url: 'https://invidious.protokolla.fi', name: 'Protokolla (FI)', status: 'unknown' },
+      { url: 'https://invidious.slipfox.xyz', name: 'Slipfox (XYZ)', status: 'unknown' },
+      { url: 'https://yewtu.be', name: 'YewTube (EU)', status: 'unknown' }
     ];
 
     // Load custom or active instance from localStorage if saved
@@ -49,7 +49,7 @@ class InvidiousApi {
     if (this.onInstanceChange) this.onInstanceChange(this.instances[idx]);
   }
 
-  async _fetchWithFallback(endpoint, options = {}, timeoutMs = 8000) {
+  async _fetchWithFallback(endpoint, options = {}, timeoutMs = 4500) {
     let attempts = 0;
     const maxAttempts = this.instances.length;
 
@@ -61,10 +61,24 @@ class InvidiousApi {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-        const res = await fetch(fullUrl, {
-          ...options,
-          signal: controller.signal
-        });
+        let res;
+        try {
+          res = await fetch(fullUrl, {
+            ...options,
+            signal: controller.signal
+          });
+        } catch (fetchErr) {
+          // If on localhost and direct fetch failed (e.g. CORS), try local server proxy
+          if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            const proxyUrl = `/api/proxy?url=${encodeURIComponent(fullUrl)}`;
+            res = await fetch(proxyUrl, {
+              ...options,
+              signal: controller.signal
+            });
+          } else {
+            throw fetchErr;
+          }
+        }
         clearTimeout(timeoutId);
 
         if (!res.ok) {

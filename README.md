@@ -53,18 +53,23 @@
 
 Aplikasi ini sangat ringan dan tidak memerlukan instalasi dependensi pihak ketiga (*Zero Dependency*).
 
-### Menjalankan Server Lokal:
+### Pilihan 1: Klik Dua Kali (Paling Mudah di Windows)
+Cukup klik dua kali file **`jalankan.bat`** di folder project. File ini akan otomatis menjalankan server dan membuka peramban ke `http://localhost:3000`.
+
+### Pilihan 2: Melalui Terminal / PowerShell
 Buka terminal / PowerShell di folder ini (`d:\PROJECT\PLAYER YOUTUBE`), lalu jalankan:
 
 ```bash
 node server.js
 ```
-*atau:*
+*atau jika menggunakan npm:*
 ```bash
-npm start
+npm.cmd start
 ```
 
-Buka peramban (browser) favorit Anda dan akses:
+> **Catatan PowerShell di Windows:** Jika menjalankan `npm start` memunculkan pesan error *`PSSecurityException / running scripts is disabled`*, gunakan perintah `node server.js` atau `npm.cmd start` langsung.
+
+Buka peramban (browser) Anda dan akses:
 👉 **[http://localhost:3000](http://localhost:3000)**
 
 ---
