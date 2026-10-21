@@ -129,7 +129,10 @@ class AuraMediaPlayer {
 
       if (this.embedFrame && this.currentTrackData) {
         this.embedFrame.classList.remove('hidden');
-        this.embedFrame.src = `https://www.youtube-nocookie.com/embed/${this.currentTrackData.id}?autoplay=1&enablejsapi=1&modestbranding=1&rel=0`;
+        const originParam = window.location.origin && window.location.origin !== 'null'
+          ? `&origin=${encodeURIComponent(window.location.origin)}`
+          : '';
+        this.embedFrame.src = `https://www.youtube.com/embed/${this.currentTrackData.id}?autoplay=1&enablejsapi=1&modestbranding=1&rel=0${originParam}`;
       }
       this.isPlaying = true;
       this.updatePlayPauseUI(true);
