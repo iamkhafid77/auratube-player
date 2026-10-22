@@ -10,8 +10,9 @@
   <!-- Referrer Policy to satisfy YouTube embed authentication (fixes Error 153) while keeping thumbnails clean -->
   <meta name="referrer" content="strict-origin-when-cross-origin">
 
-  <!-- Favicon via SVG Data URI -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><path d='M8 5v14l11-7z'/></svg>">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/style.css">
@@ -24,14 +25,10 @@
     <aside class="app-sidebar" id="app-sidebar-nav">
       <div class="brand-wrapper">
         <div class="brand-logo-icon">
-          <!-- YouTube Red Play Badge with Blue Glow -->
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M21.58 7.19a2.7 2.7 0 0 0-1.9-1.9C17.97 4.8 12 4.8 12 4.8s-5.97 0-7.68.49a2.7 2.7 0 0 0-1.9 1.9A28.4 28.4 0 0 0 2 12c0 1.63.14 3.26.42 4.81a2.7 2.7 0 0 0 1.9 1.9c1.71.49 7.68.49 7.68.49s5.97 0 7.68-.49a2.7 2.7 0 0 0 1.9-1.9c.28-1.55.42-3.18.42-4.81 0-1.63-.14-3.26-.42-4.81z"/>
-            <path d="M10 15.5l5.5-3.5L10 8.5v7z" fill="#ffffff"/>
-          </svg>
+          <img src="assets/logo-emblem.png" alt="AuraTube" class="brand-logo-img">
         </div>
         <div>
-          <h1 class="brand-name">Aura<span class="brand-name-tube">Tube</span></h1>
+          <h1 class="brand-name"><span class="brand-name-aura">Aura</span><span class="brand-name-tube">Tube</span></h1>
           <span class="brand-adfree-pill">100% Bebas Iklan</span>
         </div>
       </div>
@@ -152,7 +149,7 @@
                   <div class="vinyl-grooves"></div>
                   <div class="vinyl-grooves-inner"></div>
                   <div class="vinyl-art-center">
-                    <img class="vinyl-art-img current-track-art" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><rect width='24' height='24'/></svg>" alt="" referrerpolicy="no-referrer" />
+                    <img class="vinyl-art-img current-track-art" src="assets/logo-emblem.png" alt="AuraTube" referrerpolicy="no-referrer" />
                   </div>
                 </div>
               </div>
@@ -336,7 +333,7 @@
     <footer class="floating-bottom-player-bar" id="floating-bottom-bar">
       <!-- Mini Track Info -->
       <div class="bottom-track-info-cell">
-        <img class="bottom-track-thumb-img current-track-art" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><rect width='24' height='24'/></svg>" alt="" referrerpolicy="no-referrer" />
+        <img class="bottom-track-thumb-img current-track-art" src="assets/logo-emblem.png" alt="AuraTube" referrerpolicy="no-referrer" />
         <div class="bottom-track-text">
           <div class="bottom-track-title current-track-title">Belum ada video</div>
           <div class="bottom-track-artist current-track-artist">AuraTube Ad-Free</div>

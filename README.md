@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo-transparent.png" alt="AuraTube Logo" width="220">
+</p>
+
 # 🎵 AuraTube - Pemutar YouTube Bebas Iklan & Audio Player Modern
 
 [![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-black?logo=vercel&logoColor=white)](https://auratube-player.vercel.app)
