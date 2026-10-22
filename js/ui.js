@@ -50,6 +50,15 @@ class AuraUIController {
     this.currentView = viewName;
     this.closeMobileDrawer();
 
+    // Toggle Category Bar (Only visible on explore)
+    const categoryBar = document.getElementById('yt-category-bar');
+    if (categoryBar) {
+      categoryBar.classList.toggle('hidden', viewName !== 'explore');
+      if (viewName === 'explore') {
+        categoryBar.scrollLeft = 0;
+      }
+    }
+
     // Update Nav Buttons
     document.querySelectorAll('.nav-link-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.view === viewName);
@@ -64,9 +73,12 @@ class AuraUIController {
     const target = document.getElementById(`view-${viewName}`);
     if (target) {
       target.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    if (viewName === 'queue') {
+    if (viewName === 'watch') {
+      this.renderWatchUpNext();
+    } else if (viewName === 'queue') {
       this.renderQueueView();
     } else if (viewName === 'playlists') {
       this.renderPlaylistsView();
@@ -75,6 +87,46 @@ class AuraUIController {
     } else if (viewName === 'history') {
       this.renderHistoryView();
     }
+  }
+
+  renderWatchUpNext() {
+    const list = document.getElementById('watch-up-next-list');
+    if (!list) return;
+
+    const queue = window.AuraPlaylist ? window.AuraPlaylist.queue : [];
+    const currentIndex = window.AuraPlaylist ? window.AuraPlaylist.currentIndex : 0;
+    const upNextItems = queue.slice(currentIndex + 1, currentIndex + 25);
+
+    if (upNextItems.length === 0) {
+      list.innerHTML = `
+        <div style="padding: 24px 8px; color: #888; font-size: 0.88rem; text-align: center;">
+          Tidak ada video lain di antrean.
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = '';
+    upNextItems.forEach((item, idx) => {
+      const realIndex = currentIndex + 1 + idx;
+      const el = document.createElement('div');
+      el.className = 'yt-watch-item';
+      el.innerHTML = `
+        <div class="yt-watch-item-thumb">
+          <img src="${item.thumbnail}" alt="${this.escapeHtml(item.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://img.youtube.com/vi/${item.id}/hqdefault.jpg';" />
+          <span class="yt-watch-item-duration">${item.durationFormatted || ''}</span>
+        </div>
+        <div class="yt-watch-item-meta">
+          <div class="yt-watch-item-title" title="${this.escapeHtml(item.title)}">${this.escapeHtml(item.title)}</div>
+          <div class="yt-watch-item-channel">${this.escapeHtml(item.author || 'YouTube')}</div>
+        </div>
+      `;
+      el.addEventListener('click', () => {
+        window.AuraPlaylist.jumpToIndex(realIndex);
+        this.renderWatchUpNext();
+      });
+      list.appendChild(el);
+    });
   }
 
   initEventListeners() {
@@ -182,6 +234,70 @@ class AuraUIController {
     if (headerAnda) {
       headerAnda.addEventListener('click', () => {
         this.switchView('playlists');
+      });
+    }
+
+    // Watch Page Listeners
+    const btnWatchMinimize = document.getElementById('btn-watch-minimize');
+    if (btnWatchMinimize) {
+      btnWatchMinimize.addEventListener('click', () => {
+        this.switchView('explore');
+        this.showToast('Meminimalkan ke bilah bawah', 'info');
+      });
+    }
+
+    const btnSubscribe = document.getElementById('btn-watch-subscribe');
+    if (btnSubscribe) {
+      btnSubscribe.addEventListener('click', () => {
+        btnSubscribe.classList.toggle('subscribed');
+        const isSub = btnSubscribe.classList.contains('subscribed');
+        btnSubscribe.textContent = isSub ? 'Disubscribe ✓' : 'Langganan';
+        this.showToast(isSub ? 'Berlangganan channel ini!' : 'Berhenti berlangganan', 'info');
+      });
+    }
+
+    const btnWatchShare = document.getElementById('btn-watch-share');
+    if (btnWatchShare) {
+      btnWatchShare.addEventListener('click', () => {
+        const track = window.AuraPlayer ? window.AuraPlayer.currentTrackData : null;
+        if (track) {
+          const url = `https://www.youtube.com/watch?v=${track.id}`;
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(url).then(() => {
+              this.showToast('Tautan disalin ke clipboard!', 'success');
+            }).catch(() => this.showToast(url, 'info'));
+          } else {
+            this.showToast(url, 'info');
+          }
+        }
+      });
+    }
+
+    const btnWatchSave = document.getElementById('btn-watch-save-playlist');
+    if (btnWatchSave) {
+      btnWatchSave.addEventListener('click', () => {
+        const track = window.AuraPlayer ? window.AuraPlayer.currentTrackData : null;
+        if (track) {
+          this.openAddToPlaylistModal(track);
+        }
+      });
+    }
+
+    // Fallback Overlay buttons (if video embed restricted)
+    const btnFallbackAudio = document.getElementById('btn-fallback-audio-mode');
+    if (btnFallbackAudio) {
+      btnFallbackAudio.addEventListener('click', () => {
+        if (window.AuraPlayer) window.AuraPlayer.setMode('audio');
+        const overlay = document.getElementById('embed-blocked-overlay');
+        if (overlay) overlay.classList.add('hidden');
+        this.showToast('Beralih ke mode Audio Stream!', 'success');
+      });
+    }
+
+    const btnFallbackSkip = document.getElementById('btn-fallback-skip-next');
+    if (btnFallbackSkip) {
+      btnFallbackSkip.addEventListener('click', () => {
+        if (window.AuraPlayer) window.AuraPlayer.playNext();
       });
     }
 
@@ -407,15 +523,12 @@ class AuraUIController {
       });
     }
 
-    // Bottom Player Bar Click to Re-Expand Theater
+    // Bottom Player Bar Click to Open Watch View
     const bottomTrackInfo = document.querySelector('.bottom-track-info-cell');
     if (bottomTrackInfo) {
       bottomTrackInfo.addEventListener('click', () => {
-        const stage = document.getElementById('player-theater-stage');
-        if (stage && stage.classList.contains('hidden') && window.AuraPlayer && window.AuraPlayer.currentTrackData) {
-          stage.classList.remove('hidden');
-          this.switchView('explore');
-          stage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (window.AuraPlayer && window.AuraPlayer.currentTrackData) {
+          this.switchView('watch');
         }
       });
     }
@@ -522,6 +635,7 @@ class AuraUIController {
       if (searchRes.isDirect && searchRes.results.length === 1) {
         const item = searchRes.results[0];
         window.AuraPlaylist.addToQueue(item, true);
+        this.switchView('watch');
         window.AuraPlayer.loadTrack(item, true);
         this.showToast(`Memutar video langsung: ${item.title}`, 'success');
       }
@@ -610,6 +724,7 @@ class AuraUIController {
           publishedText: 'Shorts',
           thumbnail: short.thumbnail
         };
+        this.switchView('watch');
         window.AuraPlaylist.setQueue([trackItem], 0);
         window.AuraPlayer.loadTrack(trackItem, true);
         this.showToast(`Memutar Shorts: ${short.title}`, 'info');
@@ -727,6 +842,7 @@ class AuraUIController {
       // Play on card thumbnail or title click
       const playTrack = () => {
         window.AuraPlaylist.setQueue([item, ...items.slice(index + 1)], 0);
+        this.switchView('watch');
         window.AuraPlayer.loadTrack(item, true);
         this.showToast(`Memutar: ${item.title}`, 'info');
       };

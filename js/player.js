@@ -87,11 +87,14 @@ class AuraMediaPlayer {
     this.updatePlayerMetadataUI(track);
     this.updateFavoriteUI(track.id);
 
+    // Hide blocked overlay
+    const overlay = document.getElementById('embed-blocked-overlay');
+    if (overlay) overlay.classList.add('hidden');
+
     // Unhide theater player stage when playing a video
     const theaterStage = document.getElementById('player-theater-stage');
     if (theaterStage) {
       theaterStage.classList.remove('hidden');
-      theaterStage.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     // Record into history
@@ -142,10 +145,7 @@ class AuraMediaPlayer {
       if (this.embedFrame && this.currentTrackData) {
         this.embedFrame.classList.remove('hidden');
         this.embedFrame.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
-        const originParam = window.location.origin && window.location.origin !== 'null'
-          ? `&origin=${encodeURIComponent(window.location.origin)}`
-          : '';
-        this.embedFrame.src = `https://www.youtube.com/embed/${this.currentTrackData.id}?autoplay=1&enablejsapi=1&modestbranding=1&rel=0${originParam}`;
+        this.embedFrame.src = `https://www.youtube.com/embed/${this.currentTrackData.id}?autoplay=1&enablejsapi=1&modestbranding=1&rel=0`;
       }
       this.isPlaying = true;
       this.updatePlayPauseUI(true);
@@ -563,6 +563,21 @@ class AuraMediaPlayer {
     const backdrop = document.getElementById('player-backdrop-blur');
     if (backdrop) {
       backdrop.style.backgroundImage = `url('${track.thumbnail}')`;
+    }
+
+    // Watch view specific details
+    const watchViews = document.getElementById('watch-desc-views');
+    if (watchViews) watchViews.textContent = track.viewCount ? `${track.viewCount}` : 'Tayangan YouTube';
+
+    const watchDate = document.getElementById('watch-desc-date');
+    if (watchDate) watchDate.textContent = track.publishedText || 'YouTube Video';
+
+    const watchDesc = document.getElementById('watch-desc-text');
+    if (watchDesc) watchDesc.textContent = track.description || `${track.title} oleh ${track.author || 'YouTube'}. Diputar tanpa iklan di AuraTube.`;
+
+    const btnDirect = document.getElementById('btn-open-youtube-direct');
+    if (btnDirect) {
+      btnDirect.href = `https://www.youtube.com/watch?v=${track.id}`;
     }
   }
 
