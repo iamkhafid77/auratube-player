@@ -87,6 +87,13 @@ class AuraMediaPlayer {
     this.updatePlayerMetadataUI(track);
     this.updateFavoriteUI(track.id);
 
+    // Unhide theater player stage when playing a video
+    const theaterStage = document.getElementById('player-theater-stage');
+    if (theaterStage) {
+      theaterStage.classList.remove('hidden');
+      theaterStage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
     // Record into history
     if (window.AuraPlaylist && typeof window.AuraPlaylist.addToHistory === 'function') {
       window.AuraPlaylist.addToHistory(track);

@@ -15,6 +15,10 @@
   transition: var(--transition);
 }
 
+.player-theater-wrapper.hidden {
+  display: none !important;
+}
+
 .theater-backdrop-blur {
   position: absolute;
   inset: -20px;

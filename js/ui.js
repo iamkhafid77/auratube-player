@@ -322,6 +322,144 @@ class AuraUIController {
     if (importInput) {
       importInput.addEventListener('change', (e) => this.handleImportPlaylists(e));
     }
+
+    // Voice Search Microphone (Web Speech API)
+    const micBtn = document.getElementById('search-mic-btn');
+    if (micBtn) {
+      micBtn.addEventListener('click', () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          this.showToast('Browser Anda belum mendukung input suara. Gunakan Chrome atau Edge.', 'warning');
+          return;
+        }
+
+        try {
+          const recognition = new SpeechRecognition();
+          recognition.lang = 'id-ID';
+          recognition.interimResults = false;
+          recognition.maxAlternatives = 1;
+
+          micBtn.classList.add('listening');
+          this.showToast('🎙️ Mendengarkan suara... Silakan sebutkan lagu/video.', 'info');
+
+          recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            if (transcript) {
+              const input = document.getElementById('search-input');
+              const clearBtn = document.getElementById('search-clear-btn');
+              if (input) input.value = transcript;
+              if (clearBtn) clearBtn.classList.remove('hidden');
+              this.executeSearch(transcript);
+              this.showToast(`Pencarian: "${transcript}"`, 'success');
+            }
+          };
+
+          recognition.onspeechend = () => {
+            recognition.stop();
+            micBtn.classList.remove('listening');
+          };
+
+          recognition.onerror = (err) => {
+            micBtn.classList.remove('listening');
+            this.showToast('Tidak dapat mendeteksi suara atau izin ditolak.', 'warning');
+          };
+
+          recognition.start();
+        } catch (e) {
+          micBtn.classList.remove('listening');
+          this.showToast('Gagal mengaktifkan mikrofon.', 'error');
+        }
+      });
+    }
+
+    // Top Header Action Icons
+    const btnHeaderCreate = document.getElementById('btn-header-create');
+    if (btnHeaderCreate) {
+      btnHeaderCreate.addEventListener('click', () => {
+        this.openModal('modal-create-playlist');
+      });
+    }
+
+    const btnHeaderBell = document.getElementById('btn-header-bell');
+    if (btnHeaderBell) {
+      btnHeaderBell.addEventListener('click', () => {
+        this.showToast('🔔 Tidak ada notifikasi baru. Anda siap memutar!', 'info');
+      });
+    }
+
+    const userProfileAvatar = document.getElementById('header-user-profile');
+    if (userProfileAvatar) {
+      userProfileAvatar.addEventListener('click', () => {
+        this.showToast('👤 Akun Tamu AuraTube: Streaming bebas iklan aktif tanpa batas.', 'info');
+      });
+    }
+
+    // Theater Player Close / Minimize Button
+    const btnMinimizeTheater = document.getElementById('btn-minimize-theater');
+    if (btnMinimizeTheater) {
+      btnMinimizeTheater.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const stage = document.getElementById('player-theater-stage');
+        if (stage) {
+          stage.classList.add('hidden');
+          this.showToast('Layar diperkecil ke pemutar bawah 🎵', 'info');
+        }
+      });
+    }
+
+    // Bottom Player Bar Click to Re-Expand Theater
+    const bottomTrackInfo = document.querySelector('.bottom-track-info-cell');
+    if (bottomTrackInfo) {
+      bottomTrackInfo.addEventListener('click', () => {
+        const stage = document.getElementById('player-theater-stage');
+        if (stage && stage.classList.contains('hidden') && window.AuraPlayer && window.AuraPlayer.currentTrackData) {
+          stage.classList.remove('hidden');
+          this.switchView('explore');
+          stage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    }
+
+    // YouTube Card Floating Context Menu
+    const contextMenu = document.getElementById('yt-card-context-menu');
+    if (contextMenu) {
+      // Close context menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!contextMenu.contains(e.target) && !e.target.closest('.card-menu-btn')) {
+          contextMenu.classList.add('hidden');
+        }
+      });
+
+      // Handle context menu options
+      contextMenu.querySelectorAll('.context-menu-item').forEach(itemBtn => {
+        itemBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const action = itemBtn.dataset.menuAction;
+          const video = this.activeContextItem;
+          contextMenu.classList.add('hidden');
+
+          if (!video) return;
+
+          if (action === 'queue') {
+            window.AuraPlaylist.addToQueue(video);
+            this.showToast(`"${video.title}" ditambahkan ke antrean!`, 'success');
+          } else if (action === 'watch-later') {
+            const pl = window.AuraPlaylist.getOrCreateWatchLater();
+            window.AuraPlaylist.addTrackToPlaylist(pl.id, video);
+            this.showToast(`"${video.title}" disimpan ke Tonton Nanti!`, 'success');
+          } else if (action === 'playlist') {
+            this.openAddToPlaylistModal(video);
+          } else if (action === 'copy') {
+            const ytUrl = `https://www.youtube.com/watch?v=${video.id}`;
+            navigator.clipboard.writeText(ytUrl).then(() => {
+              this.showToast('Tautan YouTube disalin ke papan klip!', 'success');
+            }).catch(() => {
+              this.showToast(`Salin manual: ${ytUrl}`, 'info');
+            });
+          }
+        });
+      });
+    }
   }
 
   openModal(modalId) {
@@ -339,6 +477,10 @@ class AuraUIController {
     this.switchView('explore');
     const container = document.getElementById('search-results-grid');
     const statusHeader = document.getElementById('explore-status-title');
+    const shortsShelf = document.getElementById('yt-shorts-shelf');
+
+    // Hide shorts shelf during specific keyword search
+    if (shortsShelf) shortsShelf.classList.add('hidden');
 
     if (statusHeader) {
       statusHeader.innerHTML = `Mencari "<strong>${this.escapeHtml(query)}</strong>"...`;
@@ -399,17 +541,98 @@ class AuraUIController {
     }
   }
 
+  renderShortsShelf() {
+    const shelf = document.getElementById('yt-shorts-shelf');
+    const container = document.getElementById('yt-shorts-grid-container');
+    if (!shelf || !container) return;
+
+    shelf.classList.remove('hidden');
+
+    const shortsData = [
+      {
+        id: 'dQw4w9WgXcQ',
+        title: 'Momen epic solo gitar legendaris 🎸🔥 #Shorts',
+        views: '2.4 jt tayangan',
+        thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg'
+      },
+      {
+        id: 'kJQP7kiw5Fk',
+        title: 'Luis Fonsi acoustic live vibes #Shorts',
+        views: '4.8 jt tayangan',
+        thumbnail: 'https://img.youtube.com/vi/kJQP7kiw5Fk/hqdefault.jpg'
+      },
+      {
+        id: '9bZkp7q19f0',
+        title: 'PSY Gangnam Style dance challenge viral 🕺',
+        views: '12 jt tayangan',
+        thumbnail: 'https://img.youtube.com/vi/9bZkp7q19f0/hqdefault.jpg'
+      },
+      {
+        id: 'fJ9rUzIMcZQ',
+        title: 'Freddie Mercury vocal power live Wembley 👑',
+        views: '3.1 jt tayangan',
+        thumbnail: 'https://img.youtube.com/vi/fJ9rUzIMcZQ/hqdefault.jpg'
+      },
+      {
+        id: 'JGwWNGJdvx8',
+        title: 'Ed Sheeran acoustic loop pedal magic ✨',
+        views: '5.2 jt tayangan',
+        thumbnail: 'https://img.youtube.com/vi/JGwWNGJdvx8/hqdefault.jpg'
+      },
+      {
+        id: 'kffacxfA7G4',
+        title: 'Nostalgia lagu hits tahun 2010an paling santai 🎧',
+        views: '1.9 jt tayangan',
+        thumbnail: 'https://img.youtube.com/vi/kffacxfA7G4/hqdefault.jpg'
+      }
+    ];
+
+    container.innerHTML = '';
+    shortsData.forEach(short => {
+      const card = document.createElement('div');
+      card.className = 'yt-short-card';
+      card.innerHTML = `
+        <img class="short-thumb-img" src="${short.thumbnail}" alt="${this.escapeHtml(short.title)}" loading="lazy" />
+        <div class="short-overlay-gradient">
+          <h4 class="short-title">${this.escapeHtml(short.title)}</h4>
+          <span class="short-views">${short.views}</span>
+        </div>
+      `;
+
+      card.addEventListener('click', () => {
+        const trackItem = {
+          id: short.id,
+          title: short.title,
+          author: 'YouTube Shorts',
+          durationFormatted: '0:59',
+          durationSeconds: 59,
+          viewCount: short.views,
+          publishedText: 'Shorts',
+          thumbnail: short.thumbnail
+        };
+        window.AuraPlaylist.setQueue([trackItem], 0);
+        window.AuraPlayer.loadTrack(trackItem, true);
+        this.showToast(`Memutar Shorts: ${short.title}`, 'info');
+      });
+
+      container.appendChild(card);
+    });
+  }
+
   async loadTrendingFeed() {
     const container = document.getElementById('search-results-grid');
     const statusHeader = document.getElementById('explore-status-title');
 
-    if (statusHeader) statusHeader.textContent = '🔥 Tren & Rekomendasi Musik Populer';
+    // Display Shorts Shelf on Home Trending Feed
+    this.renderShortsShelf();
+
+    if (statusHeader) statusHeader.textContent = '🔥 Rekomendasi Video & Musik YouTube';
 
     if (container) {
       container.innerHTML = `
         <div class="loading-state-container">
           <div class="spinner-neon"></div>
-          <p>Memuat video tren bebas iklan...</p>
+          <p>Memuat beranda video bebas iklan...</p>
         </div>
       `;
     }
@@ -428,6 +651,29 @@ class AuraUIController {
         `;
       }
     }
+  }
+
+  openCardContextMenu(e, item) {
+    e.stopPropagation();
+    const menu = document.getElementById('yt-card-context-menu');
+    if (!menu) return;
+
+    this.activeContextItem = item;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const menuWidth = 230;
+    const menuHeight = 180;
+
+    let left = rect.right - menuWidth;
+    let top = rect.bottom + 6;
+
+    if (left < 10) left = 10;
+    if (left + menuWidth > window.innerWidth) left = window.innerWidth - menuWidth - 10;
+    if (top + menuHeight > window.innerHeight) top = rect.top - menuHeight - 6;
+
+    menu.style.left = `${Math.round(left)}px`;
+    menu.style.top = `${Math.round(top)}px`;
+    menu.classList.remove('hidden');
   }
 
   renderVideoGrid(container, items) {
@@ -453,55 +699,48 @@ class AuraUIController {
           </div>
         </div>
         <div class="card-meta-content">
-          <div class="card-meta-top-row">
-            <div class="card-channel-avatar" title="${this.escapeHtml(authorName)}">
-              <span>${this.escapeHtml(initial)}</span>
+          <div class="card-channel-avatar" title="${this.escapeHtml(authorName)}">
+            <span>${this.escapeHtml(initial)}</span>
+          </div>
+          <div class="card-title-container">
+            <h4 class="card-title" title="${this.escapeHtml(item.title)}">${this.escapeHtml(item.title)}</h4>
+            <div class="card-author-row">
+              <span class="card-author">${this.escapeHtml(authorName)}</span>
+              <span class="card-verified-badge" title="Terverifikasi">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.8 14.6l-3.8-3.8 1.4-1.4 2.4 2.4 6-6 1.4 1.4-7.4 7.4z"/></svg>
+              </span>
             </div>
-            <div class="card-title-container">
-              <h4 class="card-title" title="${this.escapeHtml(item.title)}">${this.escapeHtml(item.title)}</h4>
-              <div class="card-author-row">
-                <span class="card-author">${this.escapeHtml(authorName)}</span>
-                <span class="card-verified-badge" title="Terverifikasi">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.8 14.6l-3.8-3.8 1.4-1.4 2.4 2.4 6-6 1.4 1.4-7.4 7.4z"/></svg>
-                </span>
-              </div>
-              <div class="card-stats-row">
-                <span class="card-views">${item.viewCount}</span>
-                <span class="card-dot-sep">•</span>
-                <span class="card-published">${this.escapeHtml(item.publishedText || 'YouTube')}</span>
-              </div>
+            <div class="card-stats-row">
+              <span class="card-views">${item.viewCount}</span>
+              <span class="card-dot-sep">•</span>
+              <span class="card-published">${this.escapeHtml(item.publishedText || 'YouTube')}</span>
             </div>
           </div>
-          <div class="card-actions-row">
-            <button class="card-action-btn btn-add-queue" title="Tambah ke antrean">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Antrean
-            </button>
-            <button class="card-action-btn btn-add-playlist" title="Simpan ke playlist">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg> Simpan
-            </button>
-          </div>
+          <button class="card-menu-btn" title="Tindakan lainnya" aria-label="Menu Opsi Video">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
+          </button>
         </div>
       `;
 
-      // Click thumbnail/play to play immediately
-      card.querySelector('.card-thumbnail-wrapper').addEventListener('click', () => {
+      // Play on card thumbnail or title click
+      const playTrack = () => {
         window.AuraPlaylist.setQueue([item, ...items.slice(index + 1)], 0);
         window.AuraPlayer.loadTrack(item, true);
         this.showToast(`Memutar: ${item.title}`, 'info');
-      });
+      };
 
-      // Add to queue
-      card.querySelector('.btn-add-queue').addEventListener('click', (e) => {
-        e.stopPropagation();
-        window.AuraPlaylist.addToQueue(item);
-        this.showToast(`"${item.title}" ditambahkan ke antrean!`, 'success');
-      });
+      card.querySelector('.card-thumbnail-wrapper').addEventListener('click', playTrack);
+      card.querySelector('.card-title').addEventListener('click', playTrack);
 
-      // Add to playlist modal
-      card.querySelector('.btn-add-playlist').addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.openAddToPlaylistModal(item);
-      });
+      // Context Menu trigger (Three dots button)
+      const menuBtn = card.querySelector('.card-menu-btn');
+      if (menuBtn) {
+        menuBtn.addEventListener('click', (e) => {
+          this.openCardContextMenu(e, item);
+        });
+      }
 
       container.appendChild(card);
     });

@@ -262,57 +262,92 @@
     <main class="app-main" id="app-main-content">
       
       <!-- TOP HEADER (SEARCH & QUICK STATUS) -->
+      <!-- TOP HEADER (YouTube Style) -->
       <header class="app-header">
-        <button class="header-hamburger-btn" id="header-toggle-sidebar" title="Menu Sidebar">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-          </svg>
-        </button>
+        <div class="header-left-cluster">
+          <button class="header-hamburger-btn" id="header-toggle-sidebar" title="Menu Sidebar">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Center Search Bar + Mic -->
         <div class="header-search-container">
           <form class="search-box-form" id="search-form">
-            <input 
-              type="text" 
-              class="search-input-field" 
-              id="search-input" 
-              placeholder="Telusuri video atau musik YouTube..." 
-              autocomplete="off"
-            />
-            <button type="button" class="search-clear-btn hidden" id="search-clear-btn" aria-label="Hapus pencarian">✕</button>
-            <button type="submit" class="search-submit-btn" id="search-submit-btn" title="Cari di YouTube">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="M21 21l-4.35-4.35"/>
+            <div class="search-input-wrapper">
+              <input 
+                type="text" 
+                class="search-input-field" 
+                id="search-input" 
+                placeholder="Telusuri video atau musik YouTube..." 
+                autocomplete="off"
+              />
+              <button type="button" class="search-clear-btn hidden" id="search-clear-btn" aria-label="Hapus pencarian">✕</button>
+            </div>
+            <button type="submit" class="search-submit-btn" id="search-submit-btn" title="Telusuri">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.87 19.46l-4.59-4.59a7.5 7.5 0 1 0-1.41 1.41l4.59 4.59 1.41-1.41zM10.5 16A5.5 5.5 0 1 1 16 10.5 5.5 5.5 0 0 1 10.5 16z"/>
               </svg>
             </button>
           </form>
+
+          <button type="button" class="search-mic-btn" id="search-mic-btn" title="Telusuri dengan suara">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+            </svg>
+          </button>
         </div>
 
+        <!-- Right Action Cluster -->
         <div class="header-actions-group">
-          <button class="status-badge-pill" id="api-instance-status-badge" onclick="window.AuraUI.openModal('modal-settings')" title="Klik untuk cek status server">
-            🟢 Memeriksa Server...
+          <button class="header-action-icon-btn" id="btn-header-create" title="Buat Playlist / Tambah Trek">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M14 13h-3v3H9v-3H6v-2h3V8h2v3h3v2zm3-7H3v12h14v-4.5l4 3.5V7l-4 3.5V6zm1 11.5l-3-2.6V17H4V7h11v2.1l3-2.6v11z"/>
+            </svg>
           </button>
+
+          <button class="header-action-icon-btn" id="btn-header-bell" title="Notifikasi">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+            </svg>
+            <span class="notification-badge-dot"></span>
+          </button>
+
+          <button class="status-badge-pill" id="api-instance-status-badge" onclick="window.AuraUI.openModal('modal-settings')" title="Klik untuk cek status server">
+            🟢 Server Aktif
+          </button>
+
+          <div class="header-user-avatar" id="header-user-profile" title="Akun Tamu AuraTube (Bebas Iklan)">
+            <img src="assets/logo-emblem.png" alt="AuraTube User" class="header-user-img" />
+          </div>
         </div>
       </header>
 
       <!-- YOUTUBE TOP CATEGORY FILTER BAR -->
       <nav class="yt-category-bar" id="yt-category-bar" aria-label="Kategori Rekomendasi">
         <button class="yt-chip-btn active" data-query="">Semua</button>
-        <button class="yt-chip-btn" data-query="lagu trending indonesia">🔥 Trending Musik</button>
-        <button class="yt-chip-btn" data-query="lofi hip hop radio beats to relax chill">☕ Lofi Beats</button>
-        <button class="yt-chip-btn" data-query="pop indonesia terbaru hits">🇮🇩 Pop Indonesia</button>
-        <button class="yt-chip-btn" data-query="akustik santai cafe indonesia">🎸 Akustik</button>
-        <button class="yt-chip-btn" data-query="podcast indonesia seru">🎙️ Podcast</button>
-        <button class="yt-chip-btn" data-query="rock classic slow barat terbaik">⚡ Classic Rock</button>
-        <button class="yt-chip-btn" data-query="gaming music no copyright chill">🎮 Gaming</button>
-        <button class="yt-chip-btn" data-query="piano instrumental relaxing study">🎹 Piano Santai</button>
-        <button class="yt-chip-btn" data-query="lagu jawa koplo akustik santai">🌾 Jawa Hits</button>
+        <button class="yt-chip-btn" data-query="lagu trending indonesia">Musik</button>
+        <button class="yt-chip-btn" data-query="gaming music no copyright chill">Gaming</button>
+        <button class="yt-chip-btn" data-query="lofi hip hop radio beats to relax chill">Campuran</button>
+        <button class="yt-chip-btn" data-query="live acoustic music chill">Live</button>
+        <button class="yt-chip-btn" data-query="podcast indonesia terbaru">Podcasts</button>
+        <button class="yt-chip-btn" data-query="pop indonesia terbaru hits">Pop Indonesia</button>
+        <button class="yt-chip-btn" data-query="akustik santai cafe indonesia">Akustik</button>
+        <button class="yt-chip-btn" data-query="rock classic slow barat terbaik">Rock</button>
+        <button class="yt-chip-btn" data-query="piano instrumental relaxing study">Relaksasi</button>
+        <button class="yt-chip-btn" data-query="lagu jawa koplo akustik santai">Koplo Akustik</button>
+        <button class="yt-chip-btn" data-query="trailer film terbaru 2026">Film</button>
+        <button class="yt-chip-btn" data-query="berita terkini hari ini">Berita</button>
       </nav>
 
       <!-- VIEWS WRAPPER -->
       <div class="views-wrapper">
 
-        <!-- THEATER STAGE (HERO PLAYER) -->
-        <section class="player-theater-wrapper" id="player-theater-stage" data-active-mode="video">
+        <!-- THEATER STAGE (HERO PLAYER - MINIMIZABLE) -->
+        <section class="player-theater-wrapper hidden" id="player-theater-stage" data-active-mode="video">
+          <button class="theater-close-btn" id="btn-minimize-theater" title="Perkecil ke Pemutar Bawah">✕</button>
           <div class="theater-backdrop-blur" id="player-backdrop-blur"></div>
           
           <div class="theater-inner-stage">
@@ -447,8 +482,22 @@
 
         <!-- VIEW 1: EXPLORE & SEARCH RESULTS -->
         <section class="view-panel" id="view-explore">
-          <div class="view-section-header">
-            <h2 class="view-section-title" id="explore-status-title">🔥 Tren & Rekomendasi Musik</h2>
+          
+          <!-- YOUTUBE SHORTS CAROUSEL SHELF -->
+          <div class="yt-shorts-shelf-container" id="yt-shorts-shelf">
+            <div class="yt-shorts-shelf-header">
+              <div class="shorts-title-group">
+                <svg class="shorts-icon-svg" viewBox="0 0 24 24" fill="#ff0033">
+                  <path d="M17.77 10.32l-1.2-.5L18 8.06a3.74 3.74 0 0 0-3.5-5.46 3.7 3.7 0 0 0-2.48.96L5.86 8.5a3.75 3.75 0 0 0-.25 5.24l1.2.5L5.35 15.9a3.74 3.74 0 0 0 3.5 5.46c.92 0 1.8-.34 2.48-.96l6.16-4.94a3.75 3.75 0 0 0 .28-5.64zm-7.27 4.18V9.5l4.5 2.5-4.5 2.5z"/>
+                </svg>
+                <h3 class="shorts-shelf-title">Shorts</h3>
+              </div>
+            </div>
+            <div class="yt-shorts-grid" id="yt-shorts-grid-container"></div>
+          </div>
+
+          <div class="view-section-header" id="explore-header-container">
+            <h2 class="view-section-title" id="explore-status-title">🔥 Rekomendasi Video & Musik</h2>
           </div>
           <div class="video-grid" id="search-results-grid"></div>
         </section>
@@ -679,6 +728,26 @@
           </div>
         </form>
       </div>
+    </div>
+
+    <!-- YOUTUBE CARD CONTEXT MENU POPUP -->
+    <div class="yt-context-menu hidden" id="yt-card-context-menu">
+      <button class="context-menu-item" data-menu-action="queue">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16M4 12h10M4 18h6m10-4v6m3-3h-6"/></svg>
+        <span>Tambahkan ke antrean</span>
+      </button>
+      <button class="context-menu-item" data-menu-action="watch-later">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
+        <span>Simpan ke Tonton Nanti</span>
+      </button>
+      <button class="context-menu-item" data-menu-action="playlist">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        <span>Simpan ke Playlist</span>
+      </button>
+      <button class="context-menu-item" data-menu-action="copy">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+        <span>Salin tautan video</span>
+      </button>
     </div>
 
     <!-- TOAST CONTAINER -->
