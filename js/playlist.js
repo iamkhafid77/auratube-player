@@ -8,10 +8,13 @@ class PlaylistManager {
   constructor() {
     this.STORAGE_KEY = 'auratube_playlists';
     this.QUEUE_KEY = 'auratube_current_queue';
+    this.HISTORY_KEY = 'auratube_history';
     this.FAVORITES_ID = 'playlist_favorites';
+    this.WATCH_LATER_ID = 'playlist_watch_later';
 
     this.playlists = this.loadPlaylists();
     this.queue = this.loadQueue();
+    this.history = this.loadHistory();
     this.currentIndex = -1;
 
     // Playback modes: 'none', 'all', 'one'
@@ -21,6 +24,7 @@ class PlaylistManager {
 
     this.onQueueChange = null;
     this.onPlaylistsChange = null;
+    this.onHistoryChange = null;
   }
 
   loadPlaylists() {
@@ -87,6 +91,59 @@ class PlaylistManager {
       localStorage.setItem(this.QUEUE_KEY, JSON.stringify(this.queue));
     } catch (e) {}
     if (this.onQueueChange) this.onQueueChange(this.queue, this.currentIndex);
+  }
+
+  // History Operations
+  loadHistory() {
+    try {
+      const data = localStorage.getItem(this.HISTORY_KEY);
+      if (data) return JSON.parse(data);
+    } catch (e) {}
+    return [];
+  }
+
+  saveHistory() {
+    try {
+      localStorage.setItem(this.HISTORY_KEY, JSON.stringify(this.history));
+    } catch (e) {}
+    if (this.onHistoryChange) this.onHistoryChange(this.history);
+  }
+
+  addToHistory(track) {
+    if (!track || !track.id) return;
+    this.history = this.history.filter(t => t.id !== track.id);
+    this.history.unshift({
+      id: track.id,
+      title: track.title,
+      author: track.author || 'YouTube Audio/Video',
+      thumbnail: track.thumbnail || '',
+      durationFormatted: track.durationFormatted || '',
+      playedAt: new Date().toISOString()
+    });
+    if (this.history.length > 60) this.history = this.history.slice(0, 60);
+    this.saveHistory();
+  }
+
+  clearHistory() {
+    this.history = [];
+    this.saveHistory();
+  }
+
+  getOrCreateWatchLater() {
+    let pl = this.playlists.find(p => p.id === this.WATCH_LATER_ID);
+    if (!pl) {
+      pl = {
+        id: this.WATCH_LATER_ID,
+        title: 'Tonton Nanti',
+        icon: '⏰',
+        description: 'Daftar video yang ingin ditonton nanti',
+        createdAt: new Date().toISOString(),
+        items: []
+      };
+      this.playlists.push(pl);
+      this.savePlaylists();
+    }
+    return pl;
   }
 
   // Playlist Operations

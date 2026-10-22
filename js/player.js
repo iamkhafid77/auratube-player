@@ -87,6 +87,11 @@ class AuraMediaPlayer {
     this.updatePlayerMetadataUI(track);
     this.updateFavoriteUI(track.id);
 
+    // Record into history
+    if (window.AuraPlaylist && typeof window.AuraPlaylist.addToHistory === 'function') {
+      window.AuraPlaylist.addToHistory(track);
+    }
+
     // If user explicitly chose embed as preference, play embed immediately
     if (this.currentMode === 'embed') {
       this.applyStreamSource(autoPlay);

@@ -39,8 +39,16 @@ class AuraUIController {
     }, duration);
   }
 
+  closeMobileDrawer() {
+    const sidebar = document.getElementById('app-sidebar-nav');
+    const backdrop = document.getElementById('sidebar-overlay-backdrop');
+    if (sidebar) sidebar.classList.remove('drawer-open');
+    if (backdrop) backdrop.classList.remove('visible');
+  }
+
   switchView(viewName, params = {}) {
     this.currentView = viewName;
+    this.closeMobileDrawer();
 
     // Update Nav Buttons
     document.querySelectorAll('.nav-link-btn').forEach(btn => {
@@ -64,17 +72,136 @@ class AuraUIController {
       this.renderPlaylistsView();
     } else if (viewName === 'playlist-detail' && params.playlistId) {
       this.renderPlaylistDetailView(params.playlistId);
+    } else if (viewName === 'history') {
+      this.renderHistoryView();
     }
   }
 
   initEventListeners() {
-    // Navigation buttons
+    // Navigation & Action buttons
     document.querySelectorAll('.nav-link-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const view = btn.dataset.view;
-        this.switchView(view);
+      btn.addEventListener('click', (e) => {
+        // If it's a show more button, let its dedicated handler run
+        if (btn.classList.contains('btn-show-more')) return;
+
+        // 1. View Switching
+        if (btn.dataset.view) {
+          this.switchView(btn.dataset.view);
+          return;
+        }
+
+        // 2. Search Shortcut
+        if (btn.dataset.search) {
+          const query = btn.dataset.search;
+          const searchInput = document.getElementById('search-input');
+          if (searchInput) searchInput.value = query;
+          this.executeSearch(query);
+          this.closeMobileDrawer();
+          return;
+        }
+
+        // 3. Custom Actions
+        const action = btn.dataset.action;
+        if (action === 'playlist-favorites') {
+          this.switchView('playlist-detail', { playlistId: 'playlist_favorites' });
+        } else if (action === 'playlist-watch-later') {
+          const pl = window.AuraPlaylist.getOrCreateWatchLater();
+          this.switchView('playlist-detail', { playlistId: pl.id });
+        } else if (action === 'download-data') {
+          this.handleExportPlaylists();
+        } else if (action === 'audio-mode-toggle') {
+          if (window.AuraPlayer) window.AuraPlayer.setMode('audio');
+          this.showToast('Mode Audio Musik (Vinyl) Aktif!', 'info');
+        } else if (action === 'info-premium') {
+          this.showToast('AuraTube 100% Bebas Iklan (Tanpa Iklan & Tanpa Akun)', 'success');
+        } else if (action === 'open-about-info') {
+          this.showToast('AuraTube v2.0 - Pemutar YouTube Bebas Iklan Modern', 'info');
+        }
       });
     });
+
+    // Hamburger Toggles
+    const toggleSidebar = () => {
+      if (window.innerWidth <= 900) {
+        const sidebar = document.getElementById('app-sidebar-nav');
+        const backdrop = document.getElementById('sidebar-overlay-backdrop');
+        if (sidebar) sidebar.classList.toggle('drawer-open');
+        if (backdrop) backdrop.classList.toggle('visible');
+      } else {
+        document.body.classList.toggle('sidebar-collapsed');
+        const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+        localStorage.setItem('auratube_sidebar_collapsed', isCollapsed ? '1' : '0');
+      }
+    };
+
+    const btnSidebarToggle = document.getElementById('sidebar-toggle-btn');
+    const btnHeaderToggle = document.getElementById('header-toggle-sidebar');
+    if (btnSidebarToggle) btnSidebarToggle.addEventListener('click', toggleSidebar);
+    if (btnHeaderToggle) btnHeaderToggle.addEventListener('click', toggleSidebar);
+
+    // Mobile Backdrop Click
+    const backdrop = document.getElementById('sidebar-overlay-backdrop');
+    if (backdrop) {
+      backdrop.addEventListener('click', () => this.closeMobileDrawer());
+    }
+
+    // Restore saved collapse state
+    if (localStorage.getItem('auratube_sidebar_collapsed') === '1' && window.innerWidth > 900) {
+      document.body.classList.add('sidebar-collapsed');
+    }
+
+    // Show More / Show Less Accordions
+    document.querySelectorAll('.btn-show-more').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = btn.dataset.target;
+        const target = document.getElementById(targetId);
+        const textSpan = btn.querySelector('.nav-link-text');
+        if (target) {
+          const isHidden = target.classList.contains('hidden');
+          target.classList.toggle('hidden', !isHidden);
+          btn.classList.toggle('is-open', isHidden);
+          if (textSpan) {
+            textSpan.textContent = isHidden ? 'Tampilkan lebih sedikit' : 'Tampilkan lebih banyak';
+          }
+        }
+      });
+    });
+
+    // Brand Link Click (Back to Home)
+    const brandHomeLink = document.getElementById('brand-home-link');
+    if (brandHomeLink) {
+      brandHomeLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.switchView('explore');
+      });
+    }
+
+    // Section Header "Anda >" Click
+    const headerAnda = document.getElementById('header-btn-anda');
+    if (headerAnda) {
+      headerAnda.addEventListener('click', () => {
+        this.switchView('playlists');
+      });
+    }
+
+    // Clear History Button
+    const clearHistoryBtn = document.getElementById('btn-clear-history');
+    if (clearHistoryBtn) {
+      clearHistoryBtn.addEventListener('click', () => {
+        if (confirm('Hapus seluruh riwayat histori tontonan?')) {
+          window.AuraPlaylist.clearHistory();
+          this.renderHistoryView();
+          this.showToast('Histori tontonan telah dibersihkan.', 'info');
+        }
+      });
+    }
+
+    // Secondary Settings Button in Sidebar
+    const settingsBtn2 = document.getElementById('btn-open-settings-2');
+    if (settingsBtn2) {
+      settingsBtn2.addEventListener('click', () => this.openModal('modal-settings'));
+    }
 
     // Search bar input & submit
     const searchForm = document.getElementById('search-form');
@@ -477,6 +604,60 @@ class AuraUIController {
         e.stopPropagation();
         window.AuraPlaylist.removeFromQueue(idx);
         this.renderQueueView();
+      });
+
+      container.appendChild(row);
+    });
+  }
+
+  renderHistoryView() {
+    const container = document.getElementById('history-items-container');
+    const countBadge = document.getElementById('history-total-count');
+    const history = window.AuraPlaylist.history || [];
+
+    if (countBadge) countBadge.textContent = `${history.length} video`;
+
+    if (!container) return;
+    if (history.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state-card">
+          <span class="empty-icon">🕒</span>
+          <h3>Belum Ada Histori Tontonan</h3>
+          <p>Video atau musik yang Anda putar akan tercatat secara otomatis di sini.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = '';
+    history.forEach((track, idx) => {
+      const row = document.createElement('div');
+      row.className = 'queue-track-row';
+
+      row.innerHTML = `
+        <span class="queue-track-index">${idx + 1}</span>
+        <img class="queue-track-thumb" src="${track.thumbnail}" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://img.youtube.com/vi/${track.id}/hqdefault.jpg';" />
+        <div class="queue-track-meta">
+          <div class="queue-track-title">${this.escapeHtml(track.title)}</div>
+          <div class="queue-track-author">${this.escapeHtml(track.author || '')}</div>
+        </div>
+        <span class="queue-track-duration">${track.durationFormatted || ''}</span>
+        <button class="queue-track-remove-btn" title="Hapus dari histori">✕</button>
+      `;
+
+      row.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('queue-track-remove-btn')) {
+          window.AuraPlaylist.addToQueue(track, true);
+          window.AuraPlayer.loadTrack(track, true);
+          this.showToast(`Memutar kembali: "${track.title}"`, 'info');
+        }
+      });
+
+      row.querySelector('.queue-track-remove-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.AuraPlaylist.history = window.AuraPlaylist.history.filter((_, i) => i !== idx);
+        window.AuraPlaylist.saveHistory();
+        this.renderHistoryView();
       });
 
       container.appendChild(row);

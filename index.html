@@ -21,67 +21,253 @@
 <body>
   <div class="app-shell">
 
-    <!-- SIDEBAR NAVIGATION -->
+    <!-- SIDEBAR NAVIGATION (YouTube Style) -->
     <aside class="app-sidebar" id="app-sidebar-nav">
-      <div class="brand-wrapper">
-        <div class="brand-logo-icon">
-          <img src="assets/logo-emblem.png" alt="AuraTube" class="brand-logo-img">
-        </div>
-        <div>
-          <h1 class="brand-name"><span class="brand-name-aura">Aura</span><span class="brand-name-tube">Tube</span></h1>
-          <span class="brand-adfree-pill">100% Bebas Iklan</span>
-        </div>
+      <!-- TOP HEADER: Hamburger + Brand + ID badge -->
+      <div class="sidebar-top-bar">
+        <button class="sidebar-hamburger-btn" id="sidebar-toggle-btn" title="Panduan / Menu">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+          </svg>
+        </button>
+
+        <a href="#" class="brand-wrapper" id="brand-home-link" title="AuraTube Beranda">
+          <div class="brand-logo-icon">
+            <img src="assets/logo-emblem.png" alt="AuraTube" class="brand-logo-img">
+          </div>
+          <div class="brand-title-wrap">
+            <h1 class="brand-name"><span class="brand-name-aura">Aura</span><span class="brand-name-tube">Tube</span></h1>
+            <sup class="brand-country-badge">ID</sup>
+          </div>
+        </a>
       </div>
 
-      <nav class="sidebar-nav-group">
-        <div class="nav-section-label">Menu Utama</div>
-        <div class="nav-links-list">
-          <button class="nav-link-btn active" data-view="explore" id="nav-btn-explore" title="Beranda & Tren">
+      <!-- SCROLLABLE NAVIGATION CONTENT -->
+      <div class="sidebar-scroll-container">
+        
+        <!-- SECTION 1: UTAMA (Home / Shorts / Subscriptions) -->
+        <div class="sidebar-nav-section">
+          <button class="nav-link-btn active" data-view="explore" id="nav-btn-explore" title="Beranda">
             <svg viewBox="0 0 24 24" fill="currentColor">
               <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
             </svg>
-            <span>Beranda</span>
+            <span class="nav-link-text">Beranda</span>
           </button>
-          
+
+          <button class="nav-link-btn" data-search="Trending YouTube Indonesia" id="nav-btn-shorts" title="Tren & Shorts">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.77 10.32l-1.2-.5L18 8.06a3.74 3.74 0 0 0-3.5-5.46 3.7 3.7 0 0 0-2.48.96L5.86 8.5a3.75 3.75 0 0 0-.25 5.24l1.2.5L5.35 15.9a3.74 3.74 0 0 0 3.5 5.46c.92 0 1.8-.34 2.48-.96l6.16-4.94a3.75 3.75 0 0 0 .28-5.64zm-7.27 4.18V9.5l4.5 2.5-4.5 2.5z"/>
+            </svg>
+            <span class="nav-link-text">Shorts</span>
+          </button>
+
           <button class="nav-link-btn" data-view="queue" id="nav-btn-queue" title="Antrean Putar">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M4 6h16M4 12h10M4 18h6m10-4v6m3-3h-6"/>
             </svg>
-            <span>Antrean Putar</span>
-          </button>
-
-          <button class="nav-link-btn" data-view="playlists" id="nav-btn-playlists" title="Koleksi Playlist">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-            </svg>
-            <span>Koleksi Playlist</span>
+            <span class="nav-link-text">Subscriptions</span>
           </button>
         </div>
-      </nav>
 
-      <div class="sidebar-bottom-actions">
-        <button class="btn-sidebar-create" id="btn-open-create-playlist">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 5v14M5 12h14"/>
-          </svg>
-          <span>Buat Playlist</span>
-        </button>
+        <div class="sidebar-divider"></div>
 
-        <button class="nav-link-btn" id="btn-open-settings" title="Pengaturan Server API">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2v-.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
-          </svg>
-          <span>Server & Opsi</span>
-        </button>
+        <!-- SECTION 2: ANDA > -->
+        <div class="sidebar-nav-section">
+          <div class="sidebar-section-header" id="header-btn-anda" title="Buka Koleksi Anda">
+            <span class="sidebar-section-title">Anda</span>
+            <svg class="header-chevron" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+            </svg>
+          </div>
+
+          <button class="nav-link-btn" data-view="playlists" id="nav-btn-channel" title="Channel & Koleksi Anda">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="4"/>
+              <circle cx="12" cy="10" r="3"/>
+              <path d="M7 18c0-2.2 2.2-4 5-4s5 1.8 5 4"/>
+            </svg>
+            <span class="nav-link-text">Channel Anda</span>
+          </button>
+
+          <button class="nav-link-btn" data-view="history" id="nav-btn-history" title="Histori Tontonan">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
+            </svg>
+            <span class="nav-link-text">Histori</span>
+          </button>
+
+          <button class="nav-link-btn" data-view="playlists" id="nav-btn-playlists" title="Daftar Playlist Anda">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 6h16M4 12h16M4 18h10"/>
+              <circle cx="19" cy="18" r="2"/>
+            </svg>
+            <span class="nav-link-text">Playlist</span>
+          </button>
+
+          <button class="nav-link-btn" data-action="playlist-watch-later" id="nav-btn-watch-later" title="Tonton Nanti">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/>
+            </svg>
+            <span class="nav-link-text">Tonton nanti</span>
+          </button>
+
+          <button class="nav-link-btn" data-action="playlist-favorites" id="nav-btn-liked-videos" title="Video & Lagu yang Disukai">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/>
+            </svg>
+            <span class="nav-link-text">Video yang disukai</span>
+          </button>
+
+          <!-- COLLAPSIBLE "ANDA" ITEMS -->
+          <div class="collapsible-group hidden" id="group-more-anda">
+            <button class="nav-link-btn" data-action="audio-mode-toggle" id="nav-btn-your-videos" title="Audio Player / Vinyl Disc">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10 8v8l5-4-5-4zm9-5H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
+              </svg>
+              <span class="nav-link-text">Video Anda</span>
+            </button>
+
+            <button class="nav-link-btn" data-action="download-data" id="nav-btn-download" title="Download & Ekspor Koleksi">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+              </svg>
+              <span class="nav-link-text">Download</span>
+            </button>
+          </div>
+
+          <button class="nav-link-btn btn-show-more" data-target="group-more-anda" id="btn-toggle-more-anda">
+            <svg class="chevron-toggle" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+            </svg>
+            <span class="nav-link-text">Tampilkan lebih banyak</span>
+          </button>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- SECTION 3: EKSPLORASI -->
+        <div class="sidebar-nav-section">
+          <div class="sidebar-section-header non-clickable">
+            <span class="sidebar-section-title">Eksplorasi</span>
+          </div>
+
+          <button class="nav-link-btn" data-search="Musik Populer Trending Indonesia" title="Musik">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+            <span class="nav-link-text">Musik</span>
+          </button>
+
+          <button class="nav-link-btn" data-search="Trailer Film Terbaru 2026" title="Film">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
+            </svg>
+            <span class="nav-link-text">Film</span>
+          </button>
+
+          <button class="nav-link-btn" data-search="Gaming Highlights Indonesia" title="Game">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+            </svg>
+            <span class="nav-link-text">Game</span>
+          </button>
+
+          <!-- COLLAPSIBLE "EKSPLORASI" ITEMS -->
+          <div class="collapsible-group hidden" id="group-more-explore">
+            <button class="nav-link-btn" data-search="Berita Terkini Hari Ini" title="Berita">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14H4v-4h11v4zm0-5H4V9h11v4zm5 5h-4V9h4v9z"/>
+              </svg>
+              <span class="nav-link-text">Berita</span>
+            </button>
+
+            <button class="nav-link-btn" data-search="Podcast Indonesia Terbaru" title="Podcast">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 1a4 4 0 0 0-4 4v7a4 4 0 0 0 8 0V5a4 4 0 0 0-4-4zm6 11a6 6 0 0 1-12 0H4a8 8 0 0 0 7 7.93V22h2v-2.07A8 8 0 0 0 20 12h-2z"/>
+              </svg>
+              <span class="nav-link-text">Podcast</span>
+            </button>
+          </div>
+
+          <button class="nav-link-btn btn-show-more" data-target="group-more-explore" id="btn-toggle-more-explore">
+            <svg class="chevron-toggle" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+            </svg>
+            <span class="nav-link-text">Tampilkan lebih banyak</span>
+          </button>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- SECTION 4: LAINNYA DARI AURATUBE -->
+        <div class="sidebar-nav-section">
+          <div class="sidebar-section-header non-clickable">
+            <span class="sidebar-section-title">Lainnya dari YouTube</span>
+          </div>
+
+          <button class="nav-link-btn" data-action="info-premium" title="YouTube Premium Bebas Iklan">
+            <svg viewBox="0 0 24 24" fill="#ff0033">
+              <path d="M10 15l5-3-5-3v6zm11.58-8.81A2.7 2.7 0 0 0 19.68 4.3C17.97 3.8 12 3.8 12 3.8s-5.97 0-7.68.5a2.7 2.7 0 0 0-1.9 1.89A28.4 28.4 0 0 0 2 11c0 1.63.14 3.26.42 4.81a2.7 2.7 0 0 0 1.9 1.9c1.71.49 7.68.49 7.68.49s5.97 0 7.68-.49a2.7 2.7 0 0 0 1.9-1.9c.28-1.55.42-3.18.42-4.81 0-1.63-.14-3.26-.42-4.81z"/>
+            </svg>
+            <span class="nav-link-text">YouTube Premium</span>
+          </button>
+
+          <button class="nav-link-btn" data-action="audio-mode-toggle" title="YouTube Music (Mode Audio)">
+            <svg viewBox="0 0 24 24" fill="#ff0033">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-5.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/>
+            </svg>
+            <span class="nav-link-text">YouTube Music</span>
+          </button>
+
+          <button class="nav-link-btn" data-action="audio-mode-toggle" title="YouTube Kids">
+            <svg viewBox="0 0 24 24" fill="#ff0033">
+              <path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3L10 15z"/>
+            </svg>
+            <span class="nav-link-text">YouTube Kids</span>
+          </button>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- SECTION 5: PENGATURAN & BANTUAN -->
+        <div class="sidebar-nav-section">
+          <button class="nav-link-btn" id="btn-open-settings" title="Pengaturan">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+            </svg>
+            <span class="nav-link-text">Pengaturan</span>
+          </button>
+
+          <button class="nav-link-btn" data-action="open-about-info" id="nav-btn-report-history" title="Histori Laporan">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/>
+            </svg>
+            <span class="nav-link-text">Histori laporan</span>
+          </button>
+        </div>
+
+        <!-- FOOTER COPYRIGHT & CREATOR PILL -->
+        <div class="sidebar-footer-info">
+          <p>© 2026 AuraTube ID</p>
+          <small>Pemutar YouTube Bebas Iklan</small>
+        </div>
+
       </div>
     </aside>
 
+    <!-- MOBILE OVERLAY BACKDROP -->
+    <div class="sidebar-overlay" id="sidebar-overlay-backdrop"></div>
+
     <!-- MAIN APP AREA -->
-    <main class="app-main">
+    <main class="app-main" id="app-main-content">
       
       <!-- TOP HEADER (SEARCH & QUICK STATUS) -->
       <header class="app-header">
+        <button class="header-hamburger-btn" id="header-toggle-sidebar" title="Menu Sidebar">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+          </svg>
+        </button>
         <div class="header-search-container">
           <form class="search-box-form" id="search-form">
             <input 
@@ -279,6 +465,20 @@
             </button>
           </div>
           <div class="tracks-list-container" id="queue-items-container"></div>
+        </section>
+
+        <!-- VIEW 2.5: HISTORI TONTONAN -->
+        <section class="view-panel hidden" id="view-history">
+          <div class="view-section-header">
+            <h2 class="view-section-title">
+              <span>🕒 Histori Tontonan</span>
+              <small id="history-total-count" style="font-size: 0.85rem; color: var(--text-dim); margin-left: 8px;">0 video</small>
+            </h2>
+            <button class="aura-btn aura-btn-secondary aura-btn-sm" id="btn-clear-history">
+              🗑️ Hapus Semua Histori
+            </button>
+          </div>
+          <div class="tracks-list-container" id="history-items-container"></div>
         </section>
 
         <!-- VIEW 3: PLAYLISTS COLLECTION -->
